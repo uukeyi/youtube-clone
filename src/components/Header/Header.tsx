@@ -11,23 +11,24 @@ import { useState } from "react";
 import { useDarkTheme } from "../../hooks/useDarkTheme";
 import { Search } from "@mui/icons-material";
 import { Input } from "@mui/material";
-import SideBar from "../SideBar/SideBar";
+import {SideBar} from '../SideBar/SideBar'
 export default function Header() {
    const [isOpenSideBar, setIsOpenSideBar] = useState(false);
-   const { isDarkTheme, setDarkTheme } = useDarkTheme();
+   const { darkTheme, setDarkTheme } = useDarkTheme();
    return (
       <Box>
          <SideBar isOpen={isOpenSideBar} setState={setIsOpenSideBar} />
          <AppBar
             style={{
-               background: isDarkTheme ? "#28282B" : "white",
+               background: darkTheme ? "#28282B" : "white",
                transition: "0.7s",
+               boxShadow : "none"
             }}
             position="static"
          >
             <Toolbar
                style={{
-                  color: isDarkTheme ? "white" : "black",
+                  color: darkTheme ? "white" : "black",
                   display: "flex",
                   justifyContent: "space-between",
                }}
@@ -68,9 +69,9 @@ export default function Header() {
                      style={{
                         width: "100%",
                         borderBottom: `1px solid ${
-                           isDarkTheme ? "white" : "black"
+                           darkTheme ? "white" : "black"
                         }`,
-                        caretColor: isDarkTheme ? "white" : "black",
+                        caretColor: darkTheme ? "white" : "black",
                      }}
                   />
                   <IconButton
@@ -92,7 +93,9 @@ export default function Header() {
                   >
                      <IconButton
                         onClick={() => {
-                           setDarkTheme(!isDarkTheme);
+                           if(setDarkTheme) {
+                              setDarkTheme(!darkTheme);
+                           }
                         }}
                         color="inherit"
                      >
