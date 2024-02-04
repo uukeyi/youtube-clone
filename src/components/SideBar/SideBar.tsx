@@ -15,8 +15,16 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { IconButton } from "@mui/material";
 import { useDarkTheme } from "../../hooks/useDarkTheme";
-export default function SideBar({ isOpen, setState }) {
-   const toggleDrawer = (openProps) => (event) => {
+
+interface SideBarProps {
+   isOpen: boolean;
+   setState: Function;
+}
+
+interface SideBarProps {}
+
+export const SideBar: React.FC<SideBarProps> = ({ isOpen, setState }) => {
+   const toggleDrawer = (openProps: boolean) => (event: any) => {
       if (
          event.type === "keydown" &&
          (event.key === "Tab" || event.key === "Shift")
@@ -26,7 +34,7 @@ export default function SideBar({ isOpen, setState }) {
 
       setState(openProps);
    };
-   const { isDarkTheme, setDarkTheme } = useDarkTheme();
+   const { darkTheme, setDarkTheme } = useDarkTheme();
 
    const list = () => (
       <Box
@@ -34,7 +42,7 @@ export default function SideBar({ isOpen, setState }) {
          onClick={toggleDrawer(false)}
          onKeyDown={toggleDrawer(false)}
          style={{
-            background: isDarkTheme ? "#28282B" : "white",
+            background: darkTheme ? "#28282B" : "white",
             height: "100%",
          }}
       >
@@ -50,19 +58,22 @@ export default function SideBar({ isOpen, setState }) {
          >
             <IconButton
                onClick={() => {
-                  setDarkTheme(!isDarkTheme);
+                  if(setDarkTheme) {
+                     setDarkTheme(!darkTheme);
+
+                  }
                }}
                color="inherit"
             >
                <DarkModeIcon
-                  style={{ color: isDarkTheme ? "white" : "black" }}
+                  style={{ color: darkTheme ? "white" : "black" }}
                   fontSize="large"
                />
             </IconButton>
 
             <IconButton color="inherit">
                <AccountCircle
-                  style={{ color: isDarkTheme ? "white" : "black" }}
+                  style={{ color: darkTheme ? "white" : "black" }}
                   fontSize="large"
                />
             </IconButton>
@@ -77,12 +88,12 @@ export default function SideBar({ isOpen, setState }) {
                <ListItem key={index} disablePadding>
                   <ListItemButton>
                      <ListItemIcon
-                        style={{ color: isDarkTheme ? "white" : "black" }}
+                        style={{ color: darkTheme ? "white" : "black" }}
                      >
                         {el.icon}
                      </ListItemIcon>
                      <ListItemText
-                        style={{ color: isDarkTheme ? "white" : "black" }}
+                        style={{ color: darkTheme ? "white" : "black" }}
                         primary={el.title}
                      />
                   </ListItemButton>
@@ -90,18 +101,6 @@ export default function SideBar({ isOpen, setState }) {
             ))}
          </List>
          <Divider />
-         {/* <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-               <ListItem key={text} disablePadding>
-                  <ListItemButton>
-                     <ListItemIcon>
-                        {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                     </ListItemIcon>
-                     <ListItemText primary={text} />
-                  </ListItemButton>
-               </ListItem>
-            ))}
-         </List> */}
       </Box>
    );
 
@@ -109,9 +108,9 @@ export default function SideBar({ isOpen, setState }) {
       <div>
          <React.Fragment key={"left"}>
             <Drawer anchor={"left"} open={isOpen} onClose={toggleDrawer(false)}>
-               {list("left")}
+               {list()}
             </Drawer>
          </React.Fragment>
       </div>
    );
-}
+};
