@@ -19,8 +19,8 @@ const MediaCard: React.FC<MediaCardProps> = ({
    title,
    channelTitle,
 }) => {
-   const { darkTheme } = useDarkTheme();
 
+   const { darkTheme } = useDarkTheme();
    return (
       <Card
          sx={{
@@ -32,7 +32,7 @@ const MediaCard: React.FC<MediaCardProps> = ({
       >
          <CardMedia
             sx={{ height: 200, objectFit: "cover", borderRadius: "10px" }}
-            image={thumbnails.maxres.url}
+            image={thumbnails.maxres !== undefined ? thumbnails.maxres.url  : thumbnails.high.url}
             title="green iguana"
          />
          <CardContent sx={{ padding: "10px" }}>

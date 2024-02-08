@@ -1,19 +1,22 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { IGetMediaResponse } from "../../interfaces/mediaResponse";
+import {
+   IGetMediaResponse,
+   IGetSearchVideoResponse,
+   IGetSearchDataReturn
+} from "../../interfaces/mediaResponse";
 import axios from "axios";
 interface IGetMediaParams {
    chart?: string;
    id?: string;
-//    myRating?: string;
-//    hl?: string;
-//    maxHeight?: string | number;
    maxResults?: string | number;
-//    maxWidth?: string | number;
-//    onBehalfOfContentOwner?: string;
-//    regionCode?: string;
-//    pageToken?: string;
-//    videoCategoryId?: string;
+   pageToken?: string;
 }
+interface IGetSearchParams {
+   inputValue: string;
+   pageToken : string
+   newRequest? : boolean
+}
+
 export const getData = createAsyncThunk<
    IGetMediaResponse,
    IGetMediaParams,
@@ -24,22 +27,44 @@ export const getData = createAsyncThunk<
          method: "GET",
          url: "https://www.googleapis.com/youtube/v3/videos",
          params: {
-            part: 'snippet',
+            part: "snippet",
             key: process.env.REACT_APP_API_KEY,
             chart: params.chart,
             maxResults: params.maxResults,
             id: params.id,
-            // myRating: params.myRating,
-            // hl: params.hl,
-            // maxHeight: params.maxHeight,
-            // maxWidth: params.maxWidth,
-            // onBehalfOfContentOwner: params.onBehalfOfContentOwner,
-            // regionCode : params.regionCode,
-            // pageToken : params.pageToken,
-            // videoCategoryId : params.videoCategoryId
+            pageToken: params.pageToken,
          },
       });
+
+
+
       return response.data;
+   } catch (error: any) {
+
+
+      return rejectWithValue(error.message);
+   }
+});
+
+export const getSearch = createAsyncThunk<
+   IGetSearchDataReturn,
+   IGetSearchParams,
+   { rejectValue?: string }
+>("dataSlice/getSearch", async (params, { rejectWithValue }) => {
+   try {
+      const response = await axios<IGetSearchVideoResponse>({
+         url: "https://www.googleapis.com/youtube/v3/search",
+         method: "GET",
+         params: {
+            part: "snippet",
+            key: process.env.REACT_APP_API_KEY,
+            q: params.inputValue,
+            type: "video",
+            maxResults : '15',
+            pageToken : params.pageToken
+         },
+      });
+      return {newRequest : params.newRequest !== undefined ? params.newRequest : true  , data : response.data}
    } catch (error: any) {
       return rejectWithValue(error.message);
    }
