@@ -9,10 +9,10 @@ interface IThemeProviderProps {
 }
 
 const ThemeContext = createContext<IThemeContext>({
-   darkTheme: false,
+   darkTheme: true,
 });
 export const ThemeProvider: React.FC<IThemeProviderProps> = ({ children }) => {
-   const [darkTheme, setDarkTheme] = useState(false);
+   const [darkTheme, setDarkTheme] = useState(true);
 
    return (
       <ThemeContext.Provider

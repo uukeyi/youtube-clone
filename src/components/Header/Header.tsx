@@ -11,10 +11,15 @@ import { useState } from "react";
 import { useDarkTheme } from "../../hooks/useDarkTheme";
 import { Search } from "@mui/icons-material";
 import { Input } from "@mui/material";
-import {SideBar} from '../SideBar/SideBar'
+import { SideBar } from "../SideBar/SideBar";
+import { useNavigate } from "react-router-dom";
+
 export default function Header() {
    const [isOpenSideBar, setIsOpenSideBar] = useState(false);
    const { darkTheme, setDarkTheme } = useDarkTheme();
+   const [inputValue, setInputValue] = useState("");
+   const navigate = useNavigate();
+
    return (
       <Box>
          <SideBar isOpen={isOpenSideBar} setState={setIsOpenSideBar} />
@@ -22,7 +27,7 @@ export default function Header() {
             style={{
                background: darkTheme ? "#28282B" : "white",
                transition: "0.7s",
-               boxShadow : "none"
+               boxShadow: "none",
             }}
             position="static"
          >
@@ -71,42 +76,53 @@ export default function Header() {
                         borderBottom: `1px solid ${
                            darkTheme ? "white" : "black"
                         }`,
+                        color: darkTheme ? "white" : "black",
                         caretColor: darkTheme ? "white" : "black",
+                     }}
+                     value={inputValue}
+                     placeholder="Type something.."
+                     onChange={(e) => {
+                        setInputValue(e.target.value);
                      }}
                   />
                   <IconButton
                      style={{ position: "absolute", right: "0px" }}
                      color="inherit"
+                     onClick={(e) => {
+                        if (inputValue) {
+                        
+                           navigate(`/search/${inputValue}`);
+                        }
+                     }}
                   >
                      <Search />
                   </IconButton>
                </div>
-               
-                  <Box
-                     sx={{
-                        display: {
-                           xs: "none",
-                           sm: "flex",
-                        },
-                        alignItems: "center",
-                     }}
-                  >
-                     <IconButton
-                        onClick={() => {
-                           if(setDarkTheme) {
-                              setDarkTheme(!darkTheme);
-                           }
-                        }}
-                        color="inherit"
-                     >
-                        <DarkModeIcon />
-                     </IconButton>
 
-                     <IconButton color="inherit">
-                        <AccountCircle />
-                     </IconButton>
-                  </Box>
-               
+               <Box
+                  sx={{
+                     display: {
+                        xs: "none",
+                        sm: "flex",
+                     },
+                     alignItems: "center",
+                  }}
+               >
+                  <IconButton
+                     onClick={() => {
+                        if (setDarkTheme) {
+                           setDarkTheme(!darkTheme);
+                        }
+                     }}
+                     color="inherit"
+                  >
+                     <DarkModeIcon />
+                  </IconButton>
+
+                  <IconButton color="inherit">
+                     <AccountCircle />
+                  </IconButton>
+               </Box>
             </Toolbar>
          </AppBar>
       </Box>

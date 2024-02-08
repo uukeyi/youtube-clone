@@ -1,36 +1,63 @@
-import React, { useEffect } from "react";
-import { Box, makeStyles } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxToolkit";
 import { getData } from "../store/actions/data";
 import MediaCard from "../components/MediaCard/MediaCard";
 import Button from "@mui/material/Button";
 import { useDarkTheme } from "../hooks/useDarkTheme";
+
+import { useInView } from "react-intersection-observer";
 const MainPage = () => {
    const dispatch = useAppDispatch();
    const { darkTheme } = useDarkTheme();
-   const media = useAppSelector((store) => store.data.media);
+   const { media, pageToken, errorInfo } = useAppSelector(
+      (store) => store.data
+   );
+   const { inView, ref } = useInView({
+      threshold : 0
+   });
+
    useEffect(() => {
-      dispatch(getData({ chart: "mostPopular", maxResults: "15" }));
-   }, []);
+      if (inView) {
+         dispatch(
+            getData({
+               chart: "mostPopular",
+               maxResults: "15",
+               pageToken: pageToken,
+            })
+         );
+      }
+   }, [inView]);
+   useEffect(() => {
+      if (errorInfo.isError) {
+         alert(`Error : ${errorInfo.value}`);
+      }
+   }, [errorInfo.isError]);
+   console.log(inView);
+
    return (
       <Box
          sx={{
             padding: {
-               xs: "15px",
-               sm: "30px",
+               xs: "30px",
+               sm: "70px",
+            lg : '100px'
             },
          }}
       >
-         <Box sx={{ display: "flex", gap: "10px", mb: "30px" }}>
+         <Box sx={{ display: "flex", gap: "10px", mb: "30px" , justifyContent : {
+            sm : 'center',
+            md : 'left'
+         } }}>
             {[
                {
-                  title: "Pets & Animals",
+                  title: "Animals",
                },
                {
                   title: "Games",
                },
                {
-                  title: "Travel & Events",
+                  title: "Travel",
                },
                {
                   title: "Comedy",
@@ -44,6 +71,10 @@ const MainPage = () => {
                         "&:hover": {
                            backgroundColor: darkTheme ? "#343434" : "#C8C8C8",
                         },
+                        fontSize : {
+                           xs : '12px',
+                           md : '14px'
+                        }
                      }}
                      variant="contained"
                   >
@@ -75,6 +106,7 @@ const MainPage = () => {
                );
             })}
          </Box>
+         <div ref={ref}></div>
       </Box>
    );
 };

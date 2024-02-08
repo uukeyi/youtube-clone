@@ -10,7 +10,6 @@ const MainLayout = () => {
          <main style={{transition : '0.7s' ,        background: darkTheme ? "#28282B" : "",}}className="main">
             <Outlet />
          </main>
-         <footer style={{transition : '0.7s' ,        background: darkTheme ? "#28282B" : "",}} className="footer">footer</footer>
       </>
    );
 };
