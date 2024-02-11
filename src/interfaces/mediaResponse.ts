@@ -74,6 +74,11 @@ export interface ISearchVideoSnippet {
    };
 }
 
+
+export interface IGetMediaReturn {
+   newRequest : boolean,
+   media : IGetMediaResponse
+}
  export interface IGetSearchDataReturn {
    newRequest : boolean,
    data : IGetSearchVideoResponse

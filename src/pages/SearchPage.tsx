@@ -17,12 +17,11 @@ const SearchPage = () => {
    useEffect(() => {
       dispatch(
          getSearch({
-            inputValue: query ? query : '',
+            inputValue: query ? query : "",
             pageToken: pageToken,
             newRequest: true,
          })
       );
-      console.log('query is update')
    }, [query]);
    useEffect(() => {
       if (inView && searchMedia.length) {
@@ -33,10 +32,7 @@ const SearchPage = () => {
                pageToken: pageToken,
             })
          );
-      console.log('view')
-
       }
-
    }, [inView]);
 
    useEffect(() => {
@@ -60,13 +56,14 @@ const SearchPage = () => {
                padding: {
                   xs: "30px",
                   sm: "70px",
-                  lg: "100px",
+                  lg: "150px",
                },
             }}
          >
             {searchMedia.map((el, index) => {
                return (
                   <MediaCard
+                     id={el.id.videoId}
                      key={index}
                      thumbnails={el.snippet.thumbnails}
                      title={el.snippet.title}
