@@ -40,7 +40,6 @@ const MediaCard: React.FC<MediaCardProps> = ({
                   ? thumbnails.maxres.url
                   : thumbnails.high.url
             }
-            title="green iguana"
          />
          <CardContent sx={{ padding: "10px" }}>
             {/* <Typography gutterBottom variant="h5" component="div">

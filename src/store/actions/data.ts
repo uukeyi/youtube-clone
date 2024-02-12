@@ -9,7 +9,7 @@ import {
 
 import axios from "axios";
 interface IGetMediaParams {
-   chart?: string;
+   chart: string;
    id?: string;
    maxResults?: string | number;
    pageToken?: string;
@@ -43,7 +43,6 @@ export const getData = createAsyncThunk<
             videoCategoryId: params.videoCategoryId,
          },
       });
-
       return { newRequest: params.newRequest, media: response.data };
    } catch (error: any) {
       return rejectWithValue(error.message);

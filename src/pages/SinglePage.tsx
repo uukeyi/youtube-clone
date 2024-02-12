@@ -1,33 +1,63 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxToolkit";
 import { useParams } from "react-router-dom";
-import { getSingleVideo } from "../store/actions/data";
+import { getData, getSingleVideo } from "../store/actions/data";
 import { Box, CardMedia, Typography } from "@mui/material";
 import { useDarkTheme } from "../hooks/useDarkTheme";
 import { getChannel } from "../store/actions/channel";
-
+import MediaCard from "../components/MediaCard/MediaCard";
+import { useInView } from "react-intersection-observer";
 interface SinglePageProps {}
 
 const SinglePage: React.FC<SinglePageProps> = () => {
    const { id } = useParams();
    const dispatch = useAppDispatch();
-   const { singleVideo, errorInfo } = useAppSelector((state) => state.data);
+   const { singleVideo, errorInfo, media, pageToken } = useAppSelector(
+      (state) => state.data
+   );
+   const [rendered, setRendered] = useState(false);
    const {
       channel,
       error: errorChannel,
       errorMessage: errorMessageChannel,
    } = useAppSelector((state) => state.channelData);
+   const [popup, setPopup] = useState(false);
    const { darkTheme } = useDarkTheme();
+   const { inView, ref } = useInView({
+      threshold: 0,
+   });
    useEffect(() => {
       if (id) {
          dispatch(getSingleVideo({ id: id }));
       }
    }, []);
+
    useEffect(() => {
       if (singleVideo.length) {
          dispatch(getChannel({ id: singleVideo[0].snippet.channelId }));
+         dispatch(
+            getData({
+               newRequest: true,
+               chart: "mostPopular",
+               maxResults: "15",
+               pageToken: pageToken,
+            })
+         );
+         setRendered(true);
       }
    }, [singleVideo]);
+   useEffect(() => {
+      if (inView && rendered) {
+         dispatch(
+            getData({
+               newRequest: false,
+               chart: "mostPopular",
+               maxResults: "15",
+               pageToken: pageToken,
+            })
+         );
+      }
+   }, [inView]);
    useEffect(() => {
       if (errorInfo.isError) {
          alert(`Error : ${errorInfo.value}`);
@@ -48,14 +78,26 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                lg: "60px",
             },
             display: "flex",
+            gap: "20px",
+            flexDirection: {
+               xs: "column",
+               lg: "row",
+            },
          }}
       >
-         <Box sx={{ width: "55%" }}>
+         <Box
+            sx={{
+               width: {
+                  xs: "100%",
+                  lg: "60%",
+               },
+            }}
+         >
             <iframe
                src={`https://www.youtube.com/embed/${singleVideo[0].id}`}
                // src="https://www.youtube.com/embed/KdbDDVcw7qc?rel=0"
                // frameborder="0"
-               style={{ width: "100%" }}
+               style={{ width: "100%", borderRadius: "20px" }}
                width="640"
                height="480"
             ></iframe>
@@ -77,13 +119,122 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                >
                   {singleVideo[0].snippet.title}
                </Typography>
-               <Box>
-                  {/* <CardMedia image={channel[0].snippet.thumbnails.high.url} /> */}
-                  {/* <img src={channel[0].snippet.thumbnails.high.url} alt="" /> */}
+               <Box
+                  sx={{
+                     display: "flex",
+                     alignItems: "center",
+                     gap: "14px",
+                     cursor: "pointer",
+                  }}
+               >
+                  <Box
+                     sx={{
+                        width: "55px",
+                        height: "55px",
+                        borderRadius: "100%",
+                        border: "1px solid grey",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                     }}
+                  >
+                     <CardMedia
+                        image={
+                           "https://logos-world.net/wp-content/uploads/2021/09/Mr-Beast-Logo.png"
+                        }
+                        sx={{
+                           width: "45px",
+                           height: "45px",
+                           // borderRadius: "100%",
+                        }}
+                     />
+                  </Box>
+
+                  <Typography
+                     sx={{
+                        color: darkTheme ? "white" : "black",
+                     }}
+                  >
+                     {channel[0].snippet.title}
+                  </Typography>
                </Box>
+               {singleVideo[0].snippet.description ? (
+                  <Typography
+                     sx={{
+                        fontSize: "14px",
+                        transition: "0.8s",
+                        padding: "35px",
+                        background: darkTheme ? "#181818" : "	#E0E0E0",
+                        borderRadius: "30px",
+                        color: darkTheme ? "white" : "black",
+                        whiteSpace: "pre-wrap",
+                     }}
+                  >
+                     {singleVideo[0].snippet.description.length > 100 &&
+                     !popup ? (
+                        <Typography
+                           sx={{ display: "flex", flexDirection: "column" }}
+                           component={"span"}
+                        >
+                           {singleVideo[0].snippet.description.slice(0, 100)}
+
+                           <Typography
+                              component={"span"}
+                              onClick={() => setPopup(true)}
+                              sx={{ cursor: "pointer" }}
+                           >
+                              More...
+                           </Typography>
+                        </Typography>
+                     ) : (
+                        <Typography
+                           sx={{ display: "flex", flexDirection: "column" }}
+                           component={"span"}
+                        >
+                           {singleVideo[0].snippet.description}
+                           <br />
+                           <br />
+
+                           <Typography
+                              component={"span"}
+                              onClick={() => setPopup(false)}
+                              sx={{ cursor: "pointer" }}
+                           >
+                              Close...
+                           </Typography>
+                        </Typography>
+                     )}
+                  </Typography>
+               ) : null}
             </Box>
          </Box>
-         <Box></Box>
+         <Box
+            sx={{
+               display: "grid",
+               gridTemplateColumns: {
+                  xs: "1fr",
+                  sm: "1fr 1fr",
+                  lg: "1fr",
+               },
+               gap: {
+                  sm: "20px",
+               },
+            }}
+         >
+            {media.map((el, index) => {
+               return (
+                  <MediaCard
+                     id={el.id}
+                     key={index}
+                     thumbnails={el.snippet.thumbnails}
+                     title={el.snippet.title}
+                     channelTitle={el.snippet.channelTitle}
+                  />
+               );
+            })}
+
+            <Box ref={ref}></Box>
+         </Box>
       </Box>
    ) : null;
 };

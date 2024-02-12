@@ -56,7 +56,7 @@ export default function Header() {
                   >
                      <MenuIcon />
                   </IconButton>
-                  <Typography variant="h6" component="div">
+                  <Typography onClick={() => navigate('/')} sx={{cursor : 'pointer'}} variant="h6" component="div">
                      Youtube
                   </Typography>
                </div>
