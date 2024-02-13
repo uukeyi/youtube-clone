@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxToolkit";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getData, getSingleVideo } from "../store/actions/data";
 import { Box, CardMedia, Typography } from "@mui/material";
 import { useDarkTheme } from "../hooks/useDarkTheme";
@@ -30,8 +30,8 @@ const SinglePage: React.FC<SinglePageProps> = () => {
       if (id) {
          dispatch(getSingleVideo({ id: id }));
       }
-   }, []);
-
+   }, [id]);
+   const navigate = useNavigate();
    useEffect(() => {
       if (singleVideo.length) {
          dispatch(getChannel({ id: singleVideo[0].snippet.channelId }));
@@ -95,8 +95,6 @@ const SinglePage: React.FC<SinglePageProps> = () => {
          >
             <iframe
                src={`https://www.youtube.com/embed/${singleVideo[0].id}`}
-               // src="https://www.youtube.com/embed/KdbDDVcw7qc?rel=0"
-               // frameborder="0"
                style={{ width: "100%", borderRadius: "20px" }}
                width="640"
                height="480"
@@ -139,9 +137,6 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                      }}
                   >
                      <CardMedia
-                        image={
-                           "https://logos-world.net/wp-content/uploads/2021/09/Mr-Beast-Logo.png"
-                        }
                         sx={{
                            width: "45px",
                            height: "45px",
@@ -195,13 +190,15 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                            <br />
                            <br />
 
-                           <Typography
-                              component={"span"}
-                              onClick={() => setPopup(false)}
-                              sx={{ cursor: "pointer" }}
-                           >
-                              Close...
-                           </Typography>
+                           {popup ? (
+                              <Typography
+                                 component={"span"}
+                                 onClick={() => setPopup(false)}
+                                 sx={{ cursor: "pointer" }}
+                              >
+                                 Close...
+                              </Typography>
+                           ) : null}
                         </Typography>
                      )}
                   </Typography>
@@ -209,6 +206,9 @@ const SinglePage: React.FC<SinglePageProps> = () => {
             </Box>
          </Box>
          <Box
+            onClick={(e: any) => {
+               navigate(`/singlePage/${e.target.dataset.id}`);
+            }}
             sx={{
                display: "grid",
                gridTemplateColumns: {

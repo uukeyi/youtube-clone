@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxToolkit";
 import { getSearch } from "../store/actions/data";
 import { Box } from "@mui/material";
@@ -14,6 +14,7 @@ const SearchPage = () => {
    const { inView, ref } = useInView({
       threshold: 0,
    });
+   const navigate = useNavigate()
    useEffect(() => {
       dispatch(
          getSearch({
@@ -58,6 +59,9 @@ const SearchPage = () => {
                   sm: "70px",
                   lg: "150px",
                },
+            }}
+            onClick={(e: any) => {
+               navigate(`/singlePage/${e.target.dataset.id}`);
             }}
          >
             {searchMedia.map((el, index) => {

@@ -4,7 +4,7 @@ import {
    IGetSearchVideoResponse,
    IGetSearchDataReturn,
    IGetMediaReturn,
-   IVideoSnippet,
+
 } from "../../interfaces/mediaResponse";
 
 import axios from "axios";
@@ -19,7 +19,7 @@ interface IGetMediaParams {
 interface IGetSearchParams {
    inputValue: string;
    pageToken: string;
-   newRequest?: boolean;
+   newRequest: boolean;
 }
 interface IGetSingleVideo {
    id: string;
@@ -43,6 +43,7 @@ export const getData = createAsyncThunk<
             videoCategoryId: params.videoCategoryId,
          },
       });
+
       return { newRequest: params.newRequest, media: response.data };
    } catch (error: any) {
       return rejectWithValue(error.message);
@@ -68,7 +69,7 @@ export const getSearch = createAsyncThunk<
          },
       });
       return {
-         newRequest: params.newRequest !== undefined ? params.newRequest : true,
+         newRequest: params.newRequest,
          data: response.data,
       };
    } catch (error: any) {
