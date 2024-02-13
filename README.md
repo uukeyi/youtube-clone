@@ -1,7 +1,7 @@
 # Here are some details about project and restriction 
 
 1.   Max quota in youtube API  is 10000 points (2024 year). It means you can attract with API up to 10000 points and then API won't work
-2. Max quota on each microservice is different (Youtube API). If you already reached your max quota  Youtube will return you data from your first request. Here you can watch quotes on each microservices (https://developers.google.com/youtube/v3/docs?apix=true&hl=ru)
+2. Max quota on each microservice is different (Youtube API). If you already reached your max quota  Youtube will return you same data.  Here you can watch quotes on each microservices (https://developers.google.com/youtube/v3/docs?apix=true&hl=ru)
 3. Channel Icon won't display because this project was built in Russia. Youtube blocked all channel icons for this Region. That's why i left empty icon on my project 
 
 
