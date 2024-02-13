@@ -1,15 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getData, getSearch } from "../actions/data";
+import { getData, getSearch, getSingleVideo } from "../actions/data";
 import type { PayloadAction } from "@reduxjs/toolkit";
-import { IGetSearchDataReturn } from "../../interfaces/mediaResponse";
 import {
    IGetMediaResponse,
+   IGetMediaReturn,
+   IGetSearchDataReturn,
+} from "../../interfaces/mediaResponse";
+import {
    ISearchVideoSnippet,
    IVideoSnippet,
 } from "../../interfaces/mediaResponse";
 interface IMedia {
    media: IVideoSnippet[];
    searchMedia: ISearchVideoSnippet[];
+   singleVideo: IVideoSnippet[];
    pageToken: string;
    errorInfo: {
       value: string;
@@ -20,6 +24,7 @@ const initialState: IMedia = {
    media: [],
    searchMedia: [],
    pageToken: "",
+   singleVideo: [],
    errorInfo: {
       value: "",
       isError: false,
@@ -32,9 +37,13 @@ const dataSlice = createSlice({
    extraReducers: (builder) => {
       builder.addCase(
          getData.fulfilled,
-         (state, action: PayloadAction<IGetMediaResponse>) => {
-            state.media = [...state.media, ...action.payload.items];
-            state.pageToken = action.payload.nextPageToken;
+         (state, action: PayloadAction<IGetMediaReturn>) => {
+            if (action.payload.newRequest) {
+               state.media = action.payload.media.items;
+            } else {
+               state.media = [...state.media, ...action.payload.media.items];
+            }
+            state.pageToken = action.payload.media.nextPageToken;
             state.errorInfo.isError = false;
          }
       );
@@ -45,17 +54,13 @@ const dataSlice = createSlice({
       builder.addCase(
          getSearch.fulfilled,
          (state, action: PayloadAction<IGetSearchDataReturn>) => {
-            // console.log(action.payload.newRequest)
             if (action.payload.newRequest) {
                state.searchMedia = action.payload.data.items;
-               // console.log('new request')
             } else {
                state.searchMedia = [
                   ...state.searchMedia,
                   ...action.payload.data.items,
                ];
-               // console.log('past request')
-
             }
             state.pageToken = action.payload.data.nextPageToken;
 
@@ -64,6 +69,20 @@ const dataSlice = createSlice({
       );
       builder.addCase(
          getSearch.rejected,
+         (state, action: PayloadAction<any>) => {
+            state.errorInfo.value = action.payload;
+            state.errorInfo.isError = true;
+         }
+      );
+      builder.addCase(
+         getSingleVideo.fulfilled,
+         (state, action: PayloadAction<IGetMediaResponse>) => {
+            state.singleVideo = action.payload.items;
+            state.errorInfo.isError = false;
+         }
+      );
+      builder.addCase(
+         getSingleVideo.rejected,
          (state, action: PayloadAction<any>) => {
             state.errorInfo.value = action.payload;
             state.errorInfo.isError = true;
