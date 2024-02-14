@@ -92,6 +92,7 @@ export const getSingleVideo = createAsyncThunk<
             id: params.id,
          },
       });
+      console.log(response.data)
       return response.data;
    } catch (error: any) {
       return rejectWithValue(error.message);
