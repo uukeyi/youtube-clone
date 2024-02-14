@@ -7,6 +7,9 @@ import { useDarkTheme } from "../hooks/useDarkTheme";
 import { getChannel } from "../store/actions/channel";
 import MediaCard from "../components/MediaCard/MediaCard";
 import { useInView } from "react-intersection-observer";
+import { getComments } from "../store/actions/comments";
+import Comment from "../components/Comment/Comment";
+import List from "@mui/material/List";
 interface SinglePageProps {}
 
 const SinglePage: React.FC<SinglePageProps> = () => {
@@ -15,6 +18,11 @@ const SinglePage: React.FC<SinglePageProps> = () => {
    const { singleVideo, errorInfo, media, pageToken } = useAppSelector(
       (state) => state.data
    );
+   const {
+      comments,
+      error: errorComments,
+      errorMessage: errorMessageComments,
+   } = useAppSelector((state) => state.comments);
    const [rendered, setRendered] = useState(false);
    const {
       channel,
@@ -43,6 +51,8 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                pageToken: pageToken,
             })
          );
+         dispatch(getComments({ part: "snippet", videoId: singleVideo[0].id }));
+
          setRendered(true);
       }
    }, [singleVideo]);
@@ -65,7 +75,10 @@ const SinglePage: React.FC<SinglePageProps> = () => {
       if (errorChannel) {
          alert(`Error Channel : ${errorMessageChannel}`);
       }
-   }, [errorInfo.isError, errorChannel]);
+      if (errorComments) {
+         alert(`Error Comments : ${errorMessageComments}`);
+      }
+   }, [errorInfo.isError, errorChannel, errorComments]);
    return singleVideo[0] && channel[0] ? (
       <Box
          sx={{
@@ -203,6 +216,29 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                      )}
                   </Typography>
                ) : null}
+               <List
+                  sx={{
+                     width: "100%",
+                     maxWidth: 360,
+                  }}
+               >
+                  {comments
+                     ? comments.map((comment) => {
+                          return (
+                             <Comment
+                                title={
+                                   comment.snippet.topLevelComment.snippet
+                                      .authorDisplayName
+                                }
+                                description={
+                                   comment.snippet.topLevelComment.snippet
+                                      .textDisplay
+                                }
+                             />
+                          );
+                       })
+                     : null}
+               </List>
             </Box>
          </Box>
          <Box

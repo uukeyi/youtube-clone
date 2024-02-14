@@ -20,7 +20,6 @@ export const getChannel = createAsyncThunk<
             id: params.id,
          },
       });
-      // console.log(response.data)
       return response.data;
    } catch (error : any) {
 

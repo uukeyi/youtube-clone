@@ -10,10 +10,10 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { useState } from "react";
 import { useDarkTheme } from "../../hooks/useDarkTheme";
 import { Search } from "@mui/icons-material";
-import { Input } from "@mui/material";
+import { Input, Link } from "@mui/material";
 import { SideBar } from "../SideBar/SideBar";
 import { useNavigate } from "react-router-dom";
-
+import { GoogleLogin } from "@react-oauth/google";
 export default function Header() {
    const [isOpenSideBar, setIsOpenSideBar] = useState(false);
    const { darkTheme, setDarkTheme } = useDarkTheme();
@@ -56,7 +56,12 @@ export default function Header() {
                   >
                      <MenuIcon />
                   </IconButton>
-                  <Typography onClick={() => navigate('/')} sx={{cursor : 'pointer'}} variant="h6" component="div">
+                  <Typography
+                     onClick={() => navigate("/")}
+                     sx={{ cursor: "pointer" }}
+                     variant="h6"
+                     component="div"
+                  >
                      Youtube
                   </Typography>
                </div>
@@ -90,7 +95,6 @@ export default function Header() {
                      color="inherit"
                      onClick={(e) => {
                         if (inputValue) {
-                        
                            navigate(`/search/${inputValue}`);
                         }
                      }}
@@ -119,9 +123,31 @@ export default function Header() {
                      <DarkModeIcon />
                   </IconButton>
 
-                  <IconButton color="inherit">
+                  {/* <Link
+                     // onClick={() => {
+                     //    navigate(`/https://accounts.google.com/o/oauth2/v2/auth?
+                     // scope=https://www.googleapis.com/auth/youtube.force-ssl&
+                     // redirect_uri=http://localhost:3000&
+                     // response_type=token&
+                     // client_id=${process.env.REACT_APP_CLIENT_ID}`);
+                     // }}
+                     href={`https://accounts.google.com/o/oauth2/v2/auth?
+                     scope=https://www.googleapis.com/auth/youtube.force-ssl&
+                     redirect_uri=http://localhost:3000&
+                     response_type=${process.env.REACT_APP_API_KEY}&
+                     client_id=${process.env.REACT_APP_CLIENT_ID}`}
+                     color="inherit"
+                  >
                      <AccountCircle />
-                  </IconButton>
+                  </Link> */}
+<GoogleLogin
+  onSuccess={credentialResponse => {
+    console.log(credentialResponse);
+  }}
+  onError={() => {
+    console.log('Login Failed');
+  }}
+/>;
                </Box>
             </Toolbar>
          </AppBar>
