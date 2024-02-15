@@ -10,16 +10,20 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { useState } from "react";
 import { useDarkTheme } from "../../hooks/useDarkTheme";
 import { Search } from "@mui/icons-material";
-import { Input, Link } from "@mui/material";
+import { Input} from "@mui/material";
 import { SideBar } from "../SideBar/SideBar";
 import { useNavigate } from "react-router-dom";
-import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
+
 export default function Header() {
    const [isOpenSideBar, setIsOpenSideBar] = useState(false);
    const { darkTheme, setDarkTheme } = useDarkTheme();
    const [inputValue, setInputValue] = useState("");
    const navigate = useNavigate();
-
+   const login = useGoogleLogin({
+      onSuccess: tokenResponse => localStorage.setItem(  'tokenYoutube'  ,tokenResponse.access_token),
+      scope : 'https://www.googleapis.com/auth/youtube.force-ssl'
+    });
    return (
       <Box>
          <SideBar isOpen={isOpenSideBar} setState={setIsOpenSideBar} />
@@ -122,32 +126,27 @@ export default function Header() {
                   >
                      <DarkModeIcon />
                   </IconButton>
-
-                  {/* <Link
-                     // onClick={() => {
-                     //    navigate(`/https://accounts.google.com/o/oauth2/v2/auth?
-                     // scope=https://www.googleapis.com/auth/youtube.force-ssl&
-                     // redirect_uri=http://localhost:3000&
-                     // response_type=token&
-                     // client_id=${process.env.REACT_APP_CLIENT_ID}`);
-                     // }}
-                     href={`https://accounts.google.com/o/oauth2/v2/auth?
-                     scope=https://www.googleapis.com/auth/youtube.force-ssl&
-                     redirect_uri=http://localhost:3000&
-                     response_type=${process.env.REACT_APP_API_KEY}&
-                     client_id=${process.env.REACT_APP_CLIENT_ID}`}
+                  <IconButton
+             onClick={() => login()}
+            
                      color="inherit"
                   >
                      <AccountCircle />
-                  </Link> */}
-<GoogleLogin
-  onSuccess={credentialResponse => {
-    console.log(credentialResponse);
-  }}
-  onError={() => {
-    console.log('Login Failed');
-  }}
-/>;
+                  </IconButton>
+                  {/* <GoogleLogin
+                     onSuccess={(credentialResponse) => {
+                        console.log(credentialResponse);
+                        // @ts-ignore
+                        // const info = jwtDecode(credentialResponse.credential)
+                        // console.log(info)
+                        // localStorage.setItem('credentials' , JSON.stringify(credentialResponse.credential))
+                     }}
+                     
+                     onError={() => {
+                        console.log("Login Failed");
+                     }}
+                  />
+                  ; */}
                </Box>
             </Toolbar>
          </AppBar>

@@ -47,3 +47,9 @@ export interface IComment {
    totalReplyCount: number;
    isPublic: boolean;
 }
+
+
+export interface IGetCommentsReturn {
+   newRequest: boolean;
+   comments: ICommentsResponse;
+}

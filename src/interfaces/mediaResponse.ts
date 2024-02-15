@@ -37,6 +37,7 @@ export interface IGetMediaResponse {
    etag: string;
    items: IVideoSnippet[];
    nextPageToken: string;
+   prevPageToken :string;
    pageInfo: {
       totalResults: number;
       resultsPerPage: number;

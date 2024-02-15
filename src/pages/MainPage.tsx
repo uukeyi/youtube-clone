@@ -5,13 +5,12 @@ import { getData } from "../store/actions/data";
 import MediaCard from "../components/MediaCard/MediaCard";
 import Button from "@mui/material/Button";
 import { useDarkTheme } from "../hooks/useDarkTheme";
-
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
 const MainPage = () => {
    const dispatch = useAppDispatch();
    const { darkTheme } = useDarkTheme();
-   const { media, pageToken, errorInfo } = useAppSelector(
+   const { media,  errorInfo } = useAppSelector(
       (store) => store.data
    );
    const { inView, ref } = useInView({
@@ -19,6 +18,7 @@ const MainPage = () => {
    });
    const [videoCategory, setVideoCategory] = useState(null);
    const navigate = useNavigate();
+   const pageToken = JSON.parse(localStorage.getItem('nextPageToken') as string)
    useEffect(() => {
       if (videoCategory) {
          dispatch(
@@ -31,7 +31,6 @@ const MainPage = () => {
             })
          );
       } else if (videoCategory === "") {
-         console.log("a;;");
          dispatch(
             getData({
                chart: "mostPopular",
