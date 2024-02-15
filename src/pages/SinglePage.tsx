@@ -2,28 +2,31 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../hooks/reduxToolkit";
 import { useNavigate, useParams } from "react-router-dom";
 import { getData, getSingleVideo } from "../store/actions/data";
-import { Box, CardMedia, Typography } from "@mui/material";
+import { Box, CardMedia, IconButton, Typography } from "@mui/material";
 import { useDarkTheme } from "../hooks/useDarkTheme";
 import { getChannel } from "../store/actions/channel";
 import MediaCard from "../components/MediaCard/MediaCard";
 import { useInView } from "react-intersection-observer";
-import { getComments } from "../store/actions/comments";
+import { addComment, getComments } from "../store/actions/comments";
 import Comment from "../components/Comment/Comment";
 import List from "@mui/material/List";
-interface SinglePageProps {}
-
-const SinglePage: React.FC<SinglePageProps> = () => {
+import { Input } from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
+const SinglePage: React.FC = () => {
    const { id } = useParams();
    const dispatch = useAppDispatch();
-   const { singleVideo, errorInfo, media, pageToken } = useAppSelector(
+   const [inputValue, setInputValue] = useState("");
+   const { singleVideo, errorInfo, media } = useAppSelector(
       (state) => state.data
    );
    const {
       comments,
       error: errorComments,
       errorMessage: errorMessageComments,
+      pageToken: pageTokenComments,
    } = useAppSelector((state) => state.comments);
    const [rendered, setRendered] = useState(false);
+   const [maxResultsComments, setMaxResultsComments] = useState("20");
    const {
       channel,
       error: errorChannel,
@@ -31,14 +34,24 @@ const SinglePage: React.FC<SinglePageProps> = () => {
    } = useAppSelector((state) => state.channelData);
    const [popup, setPopup] = useState(false);
    const { darkTheme } = useDarkTheme();
+   const pageToken = JSON.parse(
+      localStorage.getItem("nextPageToken") as string
+   );
    const { inView, ref } = useInView({
+      threshold: 0,
+   });
+   const { inView: inViewComments, ref: refComments } = useInView({
       threshold: 0,
    });
    useEffect(() => {
       if (id) {
          dispatch(getSingleVideo({ id: id }));
       }
+      if (window.innerWidth <= 1200) {
+         setMaxResultsComments("5");
+      }
    }, [id]);
+
    const navigate = useNavigate();
    useEffect(() => {
       if (singleVideo.length) {
@@ -51,7 +64,15 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                pageToken: pageToken,
             })
          );
-         dispatch(getComments({ part: "snippet", videoId: singleVideo[0].id }));
+         dispatch(
+            getComments({
+               part: "snippet",
+               videoId: singleVideo[0].id,
+               newRequest: true,
+               pageToken: pageTokenComments,
+               maxResults: maxResultsComments,
+            })
+         );
 
          setRendered(true);
       }
@@ -68,6 +89,19 @@ const SinglePage: React.FC<SinglePageProps> = () => {
          );
       }
    }, [inView]);
+   useEffect(() => {
+      if (inViewComments && rendered) {
+         dispatch(
+            getComments({
+               part: "snippet",
+               videoId: singleVideo[0].id,
+               newRequest: false,
+               pageToken: pageTokenComments,
+               maxResults: maxResultsComments,
+            })
+         );
+      }
+   }, [inViewComments]);
    useEffect(() => {
       if (errorInfo.isError) {
          alert(`Error : ${errorInfo.value}`);
@@ -153,7 +187,6 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                         sx={{
                            width: "45px",
                            height: "45px",
-                           // borderRadius: "100%",
                         }}
                      />
                   </Box>
@@ -169,7 +202,10 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                {singleVideo[0].snippet.description ? (
                   <Typography
                      sx={{
-                        fontSize: "14px",
+                        fontSize: {
+                           xs: "11px",
+                           sm: "14px",
+                        },
                         transition: "0.8s",
                         padding: "35px",
                         background: darkTheme ? "#181818" : "	#E0E0E0",
@@ -181,7 +217,14 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                      {singleVideo[0].snippet.description.length > 100 &&
                      !popup ? (
                         <Typography
-                           sx={{ display: "flex", flexDirection: "column" }}
+                           sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              fontSize: {
+                                 xs: "11px",
+                                 sm: "14px",
+                              },
+                           }}
                            component={"span"}
                         >
                            {singleVideo[0].snippet.description.slice(0, 100)}
@@ -189,14 +232,27 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                            <Typography
                               component={"span"}
                               onClick={() => setPopup(true)}
-                              sx={{ cursor: "pointer" }}
+                              sx={{
+                                 cursor: "pointer",
+                                 fontSize: {
+                                    xs: "11px",
+                                    sm: "14px",
+                                 },
+                              }}
                            >
                               More...
                            </Typography>
                         </Typography>
                      ) : (
                         <Typography
-                           sx={{ display: "flex", flexDirection: "column" }}
+                           sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              fontSize: {
+                                 xs: "11px",
+                                 sm: "14px",
+                              },
+                           }}
                            component={"span"}
                         >
                            {singleVideo[0].snippet.description}
@@ -207,7 +263,13 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                               <Typography
                                  component={"span"}
                                  onClick={() => setPopup(false)}
-                                 sx={{ cursor: "pointer" }}
+                                 sx={{
+                                    cursor: "pointer",
+                                    fontSize: {
+                                       xs: "11px",
+                                       sm: "14px",
+                                    },
+                                 }}
                               >
                                  Close...
                               </Typography>
@@ -216,6 +278,50 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                      )}
                   </Typography>
                ) : null}
+               <Box sx={{ position: "relative" }}>
+                  <Input
+                     disableUnderline={true}
+                     style={{
+                        marginTop: "20px",
+                        width: "100%",
+                        borderBottom: `1px solid ${
+                           darkTheme ? "white" : "black"
+                        }`,
+                        color: darkTheme ? "white" : "black",
+                        caretColor: darkTheme ? "white" : "black",
+                     }}
+                     value={inputValue}
+                     placeholder="Write comment"
+                     onChange={(e) => {
+                        setInputValue(e.target.value);
+                     }}
+                  />
+                  <IconButton
+                     sx={{
+                        color: darkTheme ? "white" : "black",
+                        position: "absolute",
+                        right: "0px",
+                        top: "14px",
+                     }}
+                     onClick={() => {
+                        if (
+                           localStorage.getItem("tokenYoutube") &&
+                           inputValue
+                        ) {
+                           dispatch(
+                              addComment({
+                                 value: inputValue,
+                                 videoId: singleVideo[0].id,
+                              })
+                           );
+                           setInputValue('')
+                        }
+                     }}
+                  >
+                     <CheckIcon />
+                  </IconButton>
+               </Box>
+
                <List
                   sx={{
                      width: "100%",
@@ -226,6 +332,7 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                      ? comments.map((comment) => {
                           return (
                              <Comment
+                                key={comment.id}
                                 title={
                                    comment.snippet.topLevelComment.snippet
                                       .authorDisplayName
@@ -238,6 +345,38 @@ const SinglePage: React.FC<SinglePageProps> = () => {
                           );
                        })
                      : null}
+                  <Box
+                     sx={{
+                        display: {
+                           xs: "none",
+                           lg: "block",
+                        },
+                     }}
+                     ref={refComments}
+                  ></Box>
+                  <Typography
+                     onClick={() => {
+                        dispatch(
+                           getComments({
+                              part: "snippet",
+                              videoId: singleVideo[0].id,
+                              newRequest: false,
+                              pageToken: pageTokenComments,
+                              maxResults: maxResultsComments,
+                           })
+                        );
+                     }}
+                     sx={{
+                        color: darkTheme ? "white" : "black",
+                        paddingLeft: "16px",
+                        display: {
+                           xs: "block",
+                           lg: "none",
+                        },
+                     }}
+                  >
+                     More...
+                  </Typography>
                </List>
             </Box>
          </Box>

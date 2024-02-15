@@ -8,9 +8,10 @@ import { useInView } from "react-intersection-observer";
 const SearchPage = () => {
    const { query } = useParams();
    const dispatch = useAppDispatch();
-   const { searchMedia, errorInfo, pageToken } = useAppSelector(
+   const { searchMedia, errorInfo } = useAppSelector(
       (store) => store.data
    );
+   const pageToken = JSON.parse(localStorage.getItem('nextPageToken') as string)
    const { inView, ref } = useInView({
       threshold: 0,
    });

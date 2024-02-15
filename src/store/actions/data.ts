@@ -4,7 +4,6 @@ import {
    IGetSearchVideoResponse,
    IGetSearchDataReturn,
    IGetMediaReturn,
-
 } from "../../interfaces/mediaResponse";
 
 import axios from "axios";
@@ -43,7 +42,13 @@ export const getData = createAsyncThunk<
             videoCategoryId: params.videoCategoryId,
          },
       });
-
+    
+      localStorage.setItem(
+         "nextPageToken",
+         response.data.nextPageToken !== undefined
+            ? JSON.stringify(response.data.nextPageToken)
+            :JSON.stringify('')
+      );
       return { newRequest: params.newRequest, media: response.data };
    } catch (error: any) {
       return rejectWithValue(error.message);
@@ -92,7 +97,7 @@ export const getSingleVideo = createAsyncThunk<
             id: params.id,
          },
       });
-      console.log(response.data)
+      // console.log(response.data)
       return response.data;
    } catch (error: any) {
       return rejectWithValue(error.message);

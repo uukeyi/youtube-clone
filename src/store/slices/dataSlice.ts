@@ -14,7 +14,7 @@ interface IMedia {
    media: IVideoSnippet[];
    searchMedia: ISearchVideoSnippet[];
    singleVideo: IVideoSnippet[];
-   pageToken: string;
+
    errorInfo: {
       value: string;
       isError: boolean;
@@ -23,7 +23,6 @@ interface IMedia {
 const initialState: IMedia = {
    media: [],
    searchMedia: [],
-   pageToken: "",
    singleVideo: [],
    errorInfo: {
       value: "",
@@ -43,7 +42,8 @@ const dataSlice = createSlice({
             } else {
                state.media = [...state.media, ...action.payload.media.items];
             }
-            state.pageToken = action.payload.media.nextPageToken;
+            // console.log(action.payload.media.nextPageToken)
+
             state.errorInfo.isError = false;
          }
       );
@@ -62,7 +62,7 @@ const dataSlice = createSlice({
                   ...action.payload.data.items,
                ];
             }
-            state.pageToken = action.payload.data.nextPageToken;
+       
 
             state.errorInfo.isError = false;
          }

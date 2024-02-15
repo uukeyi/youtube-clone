@@ -1,11 +1,9 @@
 import * as React from "react";
-import List from "@mui/material/List";
+
 import ListItem from "@mui/material/ListItem";
-import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
+import { useDarkTheme } from "../../hooks/useDarkTheme";
 
 
 
@@ -17,25 +15,23 @@ interface CommentProps {
 
 
 const Comment: React.FC<CommentProps> = ({title , description}) => {
+   const {darkTheme} = useDarkTheme()
    return (
  
          <ListItem alignItems="flex-start">
-            {/* <ListItemAvatar>
-               <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-            </ListItemAvatar> */}
             <ListItemText
+            sx={{color :darkTheme ? 'white' : 'black' , flexWrap : 'pre-wrap' }}
                primary={title}
                secondary={
                   <React.Fragment>
                      <Typography
-                        sx={{ display: "inline" }}
+                     dangerouslySetInnerHTML={{__html : description}}
+                        sx={{ display: "inline" , flexWrap : 'pre-wrap' }}
                         component="span"
                         variant="body2"
-                        color="text.primary"
+                        color={darkTheme ? 'white' : 'black'}
                      >
-                       {description}
                      </Typography>
-                     {/* {" — I'll be in your neighborhood doing errands this…"} */}
                   </React.Fragment>
                }
             />
