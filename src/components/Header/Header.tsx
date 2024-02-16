@@ -4,19 +4,16 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import { useState } from "react";
 import { useDarkTheme } from "../../hooks/useDarkTheme";
 import { Search } from "@mui/icons-material";
 import { Input} from "@mui/material";
-import { SideBar } from "../SideBar/SideBar";
 import { useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 
 export default function Header() {
-   const [isOpenSideBar, setIsOpenSideBar] = useState(false);
    const { darkTheme, setDarkTheme } = useDarkTheme();
    const [inputValue, setInputValue] = useState("");
    const navigate = useNavigate();
@@ -26,7 +23,6 @@ export default function Header() {
     });
    return (
       <Box>
-         <SideBar isOpen={isOpenSideBar} setState={setIsOpenSideBar} />
          <AppBar
             style={{
                background: darkTheme ? "#28282B" : "white",
@@ -43,23 +39,7 @@ export default function Header() {
                }}
             >
                <div style={{ display: "flex", alignItems: "center" }}>
-                  <IconButton
-                     size="large"
-                     edge="start"
-                     color="inherit"
-                     aria-label="menu"
-                     sx={{
-                        mr: {
-                           xs: 0,
-                           sm: 1,
-                        },
-                     }}
-                     onClick={() => {
-                        setIsOpenSideBar(true);
-                     }}
-                  >
-                     <MenuIcon />
-                  </IconButton>
+                  
                   <Typography
                      onClick={() => navigate("/")}
                      sx={{ cursor: "pointer" }}
